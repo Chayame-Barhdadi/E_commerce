@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur Système{% endblock %}
+
+{% block body %}
+    <div class="container my-5 text-center">
+        <div class="py-5">
+            <h1 class="display-1 fw-bold text-danger">Erreur</h1>
+            <h2 class="mb-4">Une erreur est survenue</h2>
+            <p class="lead mb-5">Nous sommes désolés, mais quelque chose s'est mal passé. Nos équipes ont été prévenues.</p>
+            <a href="{{ path('app_home') }}" class="btn btn-outline-primary btn-lg">Retour à l'accueil</a>
+        </div>
+    </div>
+{% endblock %}

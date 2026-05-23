@@ -1,0 +1,21 @@
+parameters:
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    # Fixtures are loaded automatically by autoconfigure: true
+    # But let's be explicit if needed
+    App\DataFixtures\:
+        resource: '../src/DataFixtures/'
+        tags: ['doctrine.fixture.orm']
+
+    App\Service\CartInterface: '@App\Service\CartHandler'

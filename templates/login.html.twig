@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Login / Register - Our Store{% endblock %}
+
+{% block body %}
+    <!-- Login Section -->
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow">
+                    <div class="row g-0">
+                        <!-- Left Side - Login Form -->
+                        <div class="col-md-6">
+                            <div class="card-body p-5">
+                                <h2 class="card-title mb-4">Login to Your Account</h2>
+                                
+                                {% if error %}
+                                    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                                {% endif %}
+
+                                <form method="post">
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email address</label>
+                                        <input type="email" value="{{ last_username }}" name="_username" class="form-control" id="email" placeholder="Enter your email" required autofocus>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input type="password" name="_password" class="form-control" id="password" placeholder="Enter your password" required>
+                                    </div>
+
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="rememberMe" name="_remember_me">
+                                        <label class="form-check-label" for="rememberMe">
+                                            Remember me
+                                        </label>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                                    </div>
+                                </form>
+                                <div class="mt-3 text-center">
+                                    <a href="#" class="text-decoration-none">Forgot Password?</a>
+                                </div>
+                                <hr class="my-4">
+                                <p class="text-center text-muted">Don't have an account? <a href="#register" class="text-decoration-none">Sign up</a></p>
+                            </div>
+                        </div>
+
+                        <!-- Right Side - Register Form -->
+                        <div class="col-md-6 bg-light">
+                            <div class="card-body p-5">
+                                <h2 class="card-title mb-4">Create an Account</h2>
+                                {{ form_start(registrationForm, {'action': path('app_register')}) }}
+                                    <div class="mb-3">
+                                        {{ form_label(registrationForm.firstName, 'First Name', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(registrationForm.firstName, {'attr': {'class': 'form-control', 'placeholder': 'Enter your first name'}}) }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ form_label(registrationForm.lastName, 'Last Name', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(registrationForm.lastName, {'attr': {'class': 'form-control', 'placeholder': 'Enter your last name'}}) }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ form_label(registrationForm.email, 'Email address', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control', 'placeholder': 'Enter your email'}}) }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ form_label(registrationForm.plainPassword, 'Password', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Create a password'}}) }}
+                                    </div>
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-success btn-lg">Sign Up</button>
+                                    </div>
+                                {{ form_end(registrationForm) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

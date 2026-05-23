@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Profile - Our Store{% endblock %}
+
+{% block body %}
+    <!-- Profile Section -->
+    <div class="container my-5">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <img src="{{ asset('assets/images/profile.png') }}" class="rounded-circle mb-3" alt="User Avatar" width="150" height="150">
+                        <h5 class="card-title">{{ app.user.firstName }} {{ app.user.lastName }}</h5>
+                        <p class="text-muted">{{ app.user.email }}</p>
+                        <hr>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><a href="#profile" class="text-decoration-none">Profile Information</a></li>
+                            <li class="mb-2"><a href="{{ path('app_logout') }}" class="text-decoration-none text-danger">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9">
+                <!-- Profile Information -->
+                <div class="card mb-4" id="profile">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Profile Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="fw-bold">First Name:</label>
+                                <p>{{ app.user.firstName }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="fw-bold">Last Name:</label>
+                                <p>{{ app.user.lastName }}</p>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="fw-bold">Email:</label>
+                                <p>{{ app.user.email }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
