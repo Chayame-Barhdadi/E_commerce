@@ -7,57 +7,47 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-// Entité User : représente un utilisateur de l'application
-// Implémente UserInterface (requis par le composant Security de Symfony)
-// et PasswordAuthenticatedUserInterface (pour la gestion des mots de passe hashés)
+// entité User, représente un utilisateur dans l'appli
+// elle implémente UserInterface pour que Symfony puisse gérer la connexion
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')] // Le nom 'user' est entre backticks car c'est un mot réservé SQL
+#[ORM\Table(name: '`user`')] // user est un mot réservé en SQL donc on met des backticks
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    // Clé primaire auto-incrémentée
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id = null; // id auto généré
 
-    // Email unique servant d'identifiant de connexion
     #[ORM\Column(length: 180, unique: true)]
-    private ?string $email = null;
+    private ?string $email = null; // l'email sert aussi de login
 
-    // Tableau des rôles de l'utilisateur (ex: ROLE_USER, ROLE_ADMIN)
     #[ORM\Column]
-    private array $roles = [];
+    private array $roles = []; // les rôles de l'utilisateur
 
     /**
      * @var string The hashed password
      */
-    // Mot de passe stocké sous forme hashée (jamais en clair en BDD)
     #[ORM\Column]
-    private ?string $password = null;
+    private ?string $password = null; // mot de passe hashé, jamais en clair
 
-    // Prénom de l'utilisateur (optionnel)
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $firstName = null;
+    private ?string $firstName = null; // prénom, optionnel
 
-    // Nom de famille de l'utilisateur (optionnel)
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $lastName = null;
+    private ?string $lastName = null; // nom de famille, optionnel
 
 
 
-    // Retourne l'identifiant unique de l'utilisateur
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    // Retourne l'adresse email de l'utilisateur
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    // Définit l'adresse email de l'utilisateur
     public function setEmail(string $email): self
     {
         $this->email = $email;
@@ -69,7 +59,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * @see UserInterface
      */
-    // Retourne l'identifiant unique utilisé par Symfony Security (ici l'email)
+    // Symfony utilise cette méthode pour identifier l'utilisateur, on retourne l'email
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
@@ -78,17 +68,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @see UserInterface
      */
-    // Retourne les rôles de l'utilisateur en s'assurant que ROLE_USER est toujours présent
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER'; // Chaque utilisateur possède au minimum ce rôle de base
+        // tout utilisateur a au moins ROLE_USER
+        $roles[] = 'ROLE_USER';
 
-        return array_unique($roles); // Supprime les doublons éventuels
+        return array_unique($roles); // on enlève les doublons
     }
 
-    // Définit les rôles de l'utilisateur
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
@@ -99,13 +87,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @see PasswordAuthenticatedUserInterface
      */
-    // Retourne le mot de passe hashé stocké en base de données
     public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    // Définit le mot de passe hashé (à ne jamais appeler avec un mot de passe en clair)
     public function setPassword(string $password): self
     {
         $this->password = $password;
@@ -116,33 +102,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @see UserInterface
      */
-    // Efface les données sensibles temporaires (ex: mot de passe en clair)
     public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
     }
 
-    // Retourne le prénom de l'utilisateur
     public function getFirstName(): ?string
     {
         return $this->firstName;
     }
 
-    // Définit le prénom (nullable)
     public function setFirstName(?string $firstName): self
     {
         $this->firstName = $firstName;
         return $this;
     }
 
-    // Retourne le nom de famille de l'utilisateur
     public function getLastName(): ?string
     {
         return $this->lastName;
     }
 
-    // Définit le nom de famille (nullable)
     public function setLastName(?string $lastName): self
     {
         $this->lastName = $lastName;

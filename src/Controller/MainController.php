@@ -14,39 +14,31 @@ use Symfony\Component\HttpFoundation\Request;
 
 class MainController extends AbstractController
 {
-    // Page d'accueil : récupère tous les produits depuis la base de données et les affiche
-    #[Route('/', name: 'app_home')]
-    public function index(ProductRepository $productRepository): Response
+    // page panier, on passe les articles et le total au template
+    #[Route('/cart', name: 'app_cart')]
+    public function cart(CartHandler $cart): Response
     {
-        $products = $productRepository->findAll();
-        return $this->render('index.html.twig', [
-            'products' => $products
+        return $this->render('cart.html.twig', [
+            'items' => $cart->getFullCart(),
+            'total' => $cart->getTotal()
         ]);
     }
 
-    // Page profil : accessible uniquement aux utilisateurs connectés grâce à IsGranted
-    #[Route('/profile', name: 'app_profile')]
-    #[IsGranted('ROLE_USER')]
-    public function profile(): Response
+    // affiche les produits d'une catégorie donnée, 404 si la catégorie n'existe pas
+    #[Route('/category/{id}', name: 'app_products_by_category')]
+    public function productsByCategory(int $id, CategoryRepository $categoryRepository): Response
     {
-        return $this->render('profile.html.twig');
-    }
-
-    // Page détails d'un produit : recherche le produit par son ID, retourne 404 s'il n'existe pas
-    #[Route('/product/{id}', name: 'app_product_details')]
-    public function productDetails(int $id, ProductRepository $productRepository): Response
-    {
-        $product = $productRepository->find($id);
-        if (!$product) {
-            // Si le produit n'existe pas en BDD, Symfony génère une page d'erreur 404
-            throw $this->createNotFoundException('Product not found');
+        $category = $categoryRepository->find($id);
+        if (!$category) {
+            throw $this->createNotFoundException('Catégorie non trouvée');
         }
-        return $this->render('product_details.html.twig', [
-            'product' => $product
+        return $this->render('products_by_category.html.twig', [
+            'category' => $category,
+            'products' => $category->getProducts()
         ]);
     }
 
-    // Page des catégories : récupère toutes les catégories et les passe à la vue
+    // on récupère toutes les catégories pour les afficher
     #[Route('/categories', name: 'app_categories')]
     public function categories(CategoryRepository $categoryRepository): Response
     {
@@ -56,28 +48,34 @@ class MainController extends AbstractController
         ]);
     }
 
-    // Page panier : utilise CartHandler pour obtenir les articles et le total
-    #[Route('/cart', name: 'app_cart')]
-    public function cart(CartHandler $cart): Response
+    // page d'accueil, on récupère tous les produits et on les envoie à la vue
+    #[Route('/', name: 'app_home')]
+    public function index(ProductRepository $productRepository): Response
     {
-        return $this->render('cart.html.twig', [
-            'items' => $cart->getFullCart(), // Liste des produits avec leurs quantités
-            'total' => $cart->getTotal()     // Montant total calculé
+        $products = $productRepository->findAll();
+        return $this->render('index.html.twig', [
+            'products' => $products
         ]);
     }
 
-    // Page produits par catégorie : filtre les produits selon la catégorie sélectionnée
-    #[Route('/category/{id}', name: 'app_products_by_category')]
-    public function productsByCategory(int $id, CategoryRepository $categoryRepository): Response
+    // on cherche le produit par son id, si il existe pas on renvoie une 404
+    #[Route('/product/{id}', name: 'app_product_details')]
+    public function productDetails(int $id, ProductRepository $productRepository): Response
     {
-        $category = $categoryRepository->find($id);
-        if (!$category) {
-            // Si la catégorie n'existe pas en BDD, on retourne une erreur 404
-            throw $this->createNotFoundException('Category not found');
+        $product = $productRepository->find($id);
+        if (!$product) {
+            throw $this->createNotFoundException('Produit introuvable');
         }
-        return $this->render('products_by_category.html.twig', [
-            'category' => $category,
-            'products' => $category->getProducts() // Relation OneToMany vers les produits
+        return $this->render('product_details.html.twig', [
+            'product' => $product
         ]);
+    }
+
+    // la page profil est protégée, faut être connecté pour y accéder
+    #[Route('/profile', name: 'app_profile')]
+    #[IsGranted('ROLE_USER')]
+    public function profile(): Response
+    {
+        return $this->render('profile.html.twig');
     }
 }

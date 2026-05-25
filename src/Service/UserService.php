@@ -6,29 +6,29 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-// UserService : service dédié à la logique métier liée aux utilisateurs
-// Il isole la logique d'enregistrement hors du contrôleur (principe de responsabilité unique)
+// service qui gère l'inscription des utilisateurs
+// j'ai mis ça dans un service pour pas surcharger le controller
 class UserService
 {
-    private $entityManager;  // Gère la persistance des entités en base de données
-    private $passwordHasher; // Hashage sécurisé des mots de passe
+    private $entityManager;  // pour sauvegarder en base
+    private $passwordHasher; // pour hasher le mot de passe avant de le stocker
 
-    // Injection des dépendances via le constructeur (autowiring Symfony)
+    // Symfony injecte les dépendances automatiquement
     public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher)
     {
         $this->entityManager = $entityManager;
         $this->passwordHasher = $passwordHasher;
     }
 
-    // Enregistre un nouvel utilisateur : hashe son mot de passe puis le sauvegarde en BDD
+    // enregistre un nouvel utilisateur dans la base de données
     public function registerUser(User $user, string $plainPassword): void
     {
-        // Le mot de passe en clair est hashé avant d'être stocké en base de données
+        // on hash le mot de passe avant de le stocker, jamais en clair
         $user->setPassword(
             $this->passwordHasher->hashPassword($user, $plainPassword)
         );
 
-        $this->entityManager->persist($user); // Prépare l'entité pour l'insertion
-        $this->entityManager->flush();        // Exécute la requête SQL INSERT en BDD
+        $this->entityManager->persist($user); // on prépare l'insertion
+        $this->entityManager->flush();        // on envoie en base
     }
 }

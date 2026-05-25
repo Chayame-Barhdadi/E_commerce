@@ -10,35 +10,30 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-// Contrôleur gérant l'inscription d'un nouvel utilisateur
+// controller pour l'inscription d'un nouvel utilisateur
 class RegistrationController extends AbstractController
 {
-    // Accepte les méthodes GET (affichage du formulaire) et POST (soumission du formulaire)
+    // accepte GET pour afficher le formulaire et POST quand l'utilisateur soumet
     #[Route('/register', name: 'app_register', methods: ['GET', 'POST'])]
     public function register(Request $request, UserService $userService): Response
     {
-        // Création d'un nouvel objet User vide qui sera rempli par le formulaire
-        $user = new User();
-        // Création du formulaire lié à l'entité User
+        $user = new User(); // nouvel utilisateur vide
         $form = $this->createForm(RegistrationFormType::class, $user);
-        // Hydrate le formulaire avec les données de la requête HTTP (POST)
-        $form->handleRequest($request);
+        $form->handleRequest($request); // on remplit le formulaire avec les données POST
 
-        // Vérifie que le formulaire a bien été soumis et que les données sont valides
         if ($form->isSubmitted() && $form->isValid()) {
-            // Délègue l'enregistrement au UserService (hashage du mot de passe + persistance)
+            // on délègue l'enregistrement au service UserService
             $userService->registerUser(
                 $user,
-                $form->get('plainPassword')->getData() // Mot de passe en clair récupéré du formulaire
+                $form->get('plainPassword')->getData() // mot de passe en clair récupéré du form
             );
 
             $this->addFlash('success', 'Votre compte a été créé avec succès !');
-            // Redirection vers la page de connexion après inscription réussie
-            return $this->redirectToRoute('app_login');
+            return $this->redirectToRoute('app_login'); // on redirige vers la page de connexion
         }
 
         return $this->render('login.html.twig', [
-            'registrationForm' => $form->createView(), // Passe la vue du formulaire au template Twig
+            'registrationForm' => $form->createView(),
         ]);
     }
 }

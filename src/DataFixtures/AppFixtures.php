@@ -9,12 +9,11 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-// AppFixtures : classe de données de test (fixtures) chargée en base de données via la commande :
-// php bin/console doctrine:fixtures:load
-// Elle peuple la BDD avec un utilisateur admin, des catégories et des produits de démonstration
+// cette classe sert à mettre des données de test dans la base
+// on la lance avec : php bin/console doctrine:fixtures:load
 class AppFixtures extends Fixture
 {
-    private $passwordHasher; // Utilisé pour hasher le mot de passe de l'utilisateur de test
+    private $passwordHasher; // pour hasher le mot de passe
 
     public function __construct(UserPasswordHasherInterface $passwordHasher)
     {
@@ -23,105 +22,126 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        // Add a test user
-        // Création d'un utilisateur administrateur pour les tests
+        // on crée un utilisateur admin pour tester
         $user = new User();
-        $user->setEmail('admin@test.com');
-        $user->setFirstName('Amal');
-        $user->setLastName('Benbihi');
-        $user->setRoles(['ROLE_ADMIN']); // Rôle administrateur en plus de ROLE_USER
-        $user->setPassword($this->passwordHasher->hashPassword($user, 'admin123')); // Mot de passe hashé
+        $user->setEmail('chaymae@boutique.com');
+        $user->setFirstName('Chaymae');
+        $user->setLastName('Barhdadi');
+        $user->setRoles(['ROLE_ADMIN']);
+        $user->setPassword($this->passwordHasher->hashPassword($user, 'admin123'));
         $manager->persist($user);
 
-        // Tableau associatif des catégories à créer [nom => slug]
+        // les catégories qu'on va utiliser
         $categories = [
-            'Électronique' => 'electronique',
-            'Mode' => 'mode',
-            'Maison & Jardin' => 'maison-jardin',
-            'Sports' => 'sports',
-            'Livres' => 'livres'
+            'High-Tech'     => 'high-tech',
+            'Vêtements'     => 'vetements',
+            'Maison'        => 'maison',
+            'Bien-être'     => 'bien-etre',
+            'Accessoires'   => 'accessoires'
         ];
 
-        // Création de toutes les catégories et stockage dans un tableau pour y accéder lors des produits
+        // on boucle pour créer chaque catégorie et on les garde dans un tableau
         $categoryEntities = [];
         foreach ($categories as $name => $slug) {
             $category = new Category();
             $category->setName($name);
             $manager->persist($category);
-            $categoryEntities[$name] = $category; // Indexé par nom pour faciliter l'association avec les produits
+            $categoryEntities[$name] = $category;
         }
 
-        // Tableau de données pour les produits à créer
+        // liste des produits avec toutes leurs infos
         $products = [
             [
-                'name' => 'Casque Sans Fil Premium',
-                'price' => 299.99,
-                'category' => 'Électronique',
-                'image' => 'headphones.jpg',
-                'description' => 'Découvrez un son cristallin avec notre casque sans fil haut de gamme. Doté d\'une réduction de bruit active et d\'une autonomie de 40 heures.'
+                'name'        => 'Casque Audio Nomad X3',
+                'price'       => 89.99,
+                'category'    => 'High-Tech',
+                'image'       => 'casque.jpg',
+                'description' => 'Un casque léger avec réduction de bruit passive et son clair. Idéal pour les trajets quotidiens, autonomie de 20h.'
             ],
             [
-                'name' => 'Veste en Cuir Classique',
-                'price' => 189.99,
-                'category' => 'Mode',
-                'image' => 'jacket.jpg',
-                'description' => 'Fabriquée à la main en cuir véritable, cette veste offre un look intemporel qui se bonifie avec le temps.'
+                'name'        => 'Souris Optique SilentClick',
+                'price'       => 32.50,
+                'category'    => 'High-Tech',
+                'image'       => 'souris.jpg',
+                'description' => 'Souris filaire silencieuse avec capteur optique 1600 DPI. Compatible Windows et Mac, prise en main agréable.'
             ],
             [
-                'name' => 'Plante d\'Intérieur Minimaliste',
-                'price' => 45.00,
-                'category' => 'Maison & Jardin',
-                'image' => 'plant.jpg',
-                'description' => 'Une magnifique plante d\'intérieur facile à entretenir qui ajoute une touche de nature et de fraîcheur à tout espace moderne.'
+                'name'        => 'Enceinte Portable SoundBox',
+                'price'       => 54.90,
+                'category'    => 'High-Tech',
+                'image'       => 'enceinte.jpg',
+                'description' => 'Mini enceinte Bluetooth résistante aux éclaboussures. Connexion rapide, son puissant pour sa taille.'
             ],
             [
-                'name' => 'Tapis de Yoga Professionnel',
-                'price' => 55.00,
-                'category' => 'Sports',
-                'image' => 'yoga.jpg',
-                'description' => 'Tapis de yoga écologique et antidérapant, conçu pour une adhérence et un confort optimaux lors de vos séances les plus intenses.'
+                'name'        => 'Veste Légère Outdoor',
+                'price'       => 75.00,
+                'category'    => 'Vêtements',
+                'image'       => 'veste.jpg',
+                'description' => 'Veste coupe-vent imperméable parfaite pour les sorties en plein air. Légère et pliable, elle tient dans un sac.'
             ],
             [
-                'name' => 'Enceinte Bluetooth Studio',
-                'price' => 129.99,
-                'category' => 'Électronique',
-                'image' => 'speaker.jpg',
-                'description' => 'Un son puissant dans un design compact et élégant. Se connecte instantanément à tous vos appareils.'
+                'name'        => 'Pull Col Roulé Confort',
+                'price'       => 38.00,
+                'category'    => 'Vêtements',
+                'image'       => 'pull.jpg',
+                'description' => 'Pull chaud en maille douce, coupe classique et confortable pour l\'hiver. Disponible en plusieurs coloris.'
             ],
             [
-                'name' => 'Guide Complet Développeur Full-Stack',
-                'price' => 39.99,
-                'category' => 'Livres',
-                'image' => 'book.jpg',
-                'description' => 'Le guide ultime pour maîtriser le développement web moderne. Apprenez React, Node.js et Symfony de zéro.'
+                'name'        => 'Plante Succulente Trio',
+                'price'       => 19.90,
+                'category'    => 'Maison',
+                'image'       => 'plante.jpg',
+                'description' => 'Lot de 3 petites plantes succulentes faciles à entretenir. Parfaites pour décorer un bureau ou un rebord de fenêtre.'
             ],
             [
-                'name' => 'Souris Sans Fil Ergonomique',
-                'price' => 69.99,
-                'category' => 'Électronique',
-                'image' => 'mouse.jpg',
-                'description' => 'Conçue pour un confort et une précision durables. Parfaite pour les flux de travail professionnels et créatifs.'
+                'name'        => 'Lampe de Bureau LED',
+                'price'       => 27.00,
+                'category'    => 'Maison',
+                'image'       => 'lampe.jpg',
+                'description' => 'Lampe flexible avec 3 niveaux de luminosité, port USB intégré pour charger son téléphone en même temps.'
             ],
             [
-                'name' => 'T-shirt en Coton Premium',
-                'price' => 25.00,
-                'category' => 'Mode',
-                'image' => 'tshirt.jpg',
-                'description' => 'Doux, respirant et issu de sources durables. Un essentiel de garde-robe pour un style quotidien.'
-            ]
+                'name'        => 'Tapis de Yoga Confort',
+                'price'       => 41.00,
+                'category'    => 'Bien-être',
+                'image'       => 'tapis.jpg',
+                'description' => 'Tapis antidérapant épais 6mm, surface texturée pour une bonne adhérence. Léger et facile à enrouler.'
+            ],
+            [
+                'name'        => 'Bougie Parfumée Vanille',
+                'price'       => 14.50,
+                'category'    => 'Bien-être',
+                'image'       => 'bougie.jpg',
+                'description' => 'Bougie naturelle à la cire de soja avec parfum vanille douce. Durée de combustion estimée à 40 heures.'
+            ],
+            [
+                'name'        => 'Pochette Organiseur Voyage',
+                'price'       => 16.00,
+                'category'    => 'Accessoires',
+                'image'       => 'pochette.jpg',
+                'description' => 'Pochette compacte avec plusieurs compartiments pour ranger câbles, chargeurs et petits accessoires en voyage.'
+            ],
+            [
+                'name'        => 'Carnet Bullet Journal A5',
+                'price'       => 11.90,
+                'category'    => 'Accessoires',
+                'image'       => 'carnet.jpg',
+                'description' => 'Carnet à points 160 pages, couverture rigide. Idéal pour organiser ses tâches, dessiner ou prendre des notes.'
+            ],
         ];
 
-        // Création de chaque produit et association à sa catégorie via le tableau $categoryEntities
+        // on crée chaque produit et on l'associe à sa catégorie
         foreach ($products as $pData) {
             $product = new Product();
             $product->setName($pData['name']);
             $product->setPrice($pData['price']);
             $product->setImage($pData['image']);
             $product->setDescription($pData['description']);
-            $product->setCategory($categoryEntities[$pData['category']]); // Lien avec la catégorie correspondante
+            $product->setCategory($categoryEntities[$pData['category']]);
             $manager->persist($product);
         }
 
-        $manager->flush(); // Exécute toutes les requêtes INSERT en une seule transaction
+        // on envoie tout en base d'un coup
+        $manager->flush();
     }
 }
